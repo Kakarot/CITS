@@ -101,6 +101,8 @@
     <AndroidResource Include="Resources\drawable-hdpi\icon.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\icon.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
+    <AndroidResource Include="Resources\drawable\hamburger32x32.png" />
+    <AndroidResource Include="Resources\drawable\orderOfOperations32x32.png" />
   </ItemGroup>
   <Import Project="..\CITS\CITS.projitems" Label="Shared" Condition="Exists('..\CITS\CITS.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

@@ -11,6 +11,9 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)CITSPage.xaml" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)OrderOfOperationsPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
@@ -19,5 +22,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)CITSPage.xaml.cs">
       <DependentUpon>CITSPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)OrderOfOperationsPage.xaml.cs">
+      <DependentUpon>OrderOfOperationsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Models\ProblemModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\QuizModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\IProblem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\MathProblemModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Models\" />
   </ItemGroup>
 </Project>

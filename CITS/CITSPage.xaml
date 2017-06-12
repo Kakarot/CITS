@@ -1,4 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:CITS" x:Class="CITS.CITSPage">
-	<Label Text="Welcome to Xamarin Forms!" VerticalOptions="Center" HorizontalOptions="Center" />
-</ContentPage>
+<?xml version="1.0" encoding="utf-8"?>
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:CITS" x:Class="CITS.CITSPage" MasterBehavior="Popover">
+	
+<MasterDetailPage.Master>
+        
+        <ContentPage Padding="10" Title="Master Title" Icon="hamburger32x32.png">
+            <ContentPage.Content>
+                <ScrollView>
+                <StackLayout Margin="5,30,5,5">
+                    
+                    <Label Text=" Menu"/>
+                      
+                    <Button WidthRequest="115" HorizontalOptions="StartAndExpand" Text="Lesson 1" BackgroundColor="Transparent" Clicked="Handle_Clicked_Order_Of_Operations" Image="orderOfOperations32x32.png" />
+                   
+                </StackLayout>
+                    </ScrollView>
+            </ContentPage.Content>
+        </ContentPage>
+    </MasterDetailPage.Master>
+    <MasterDetailPage.Detail>
+        <ContentPage Padding="10">
+            <ContentPage.Content>
+                <StackLayout Margin="5,30,5,5">
+                    <Label Text="Detail Page">
+                    </Label>
+                </StackLayout>
+            </ContentPage.Content>
+        </ContentPage>
+    </MasterDetailPage.Detail>  
+
+
+</MasterDetailPage>
