@@ -1,5 +1,10 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="CITS.StartupPage">
 	<ContentPage.Content>
+        <StackLayout Orientation ="Vertical" HorizontalOptions="Center" Margin="10,20,10,0">
+         <Label VerticalOptions="Center" HorizontalOptions="Center"> Welcome to the CITS!</Label>
+            <Label VerticalOptions="Center" HorizontalOptions="Center"> (Confident Intelligent Tutoring System)</Label>
+            <Label TextColor="Gray" FontSize="12" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,40,0,0"> CITS requires permission to use the front camera for tracking your facial expressions! This helps the tutoring algorithm better evaluate your mastery of a topic. Thank you!</Label>
+        </StackLayout>
 	</ContentPage.Content>
 </ContentPage>
