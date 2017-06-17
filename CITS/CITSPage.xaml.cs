@@ -8,7 +8,7 @@ namespace CITS
         public CITSPage()
         {
             InitializeComponent();
-            Detail = new NavigationPage(new OrderOfOperationsPage());
+            Detail = new NavigationPage(new StartupPage());
             IsPresented = false;
         }
 
