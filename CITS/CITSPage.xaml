@@ -8,8 +8,8 @@
                 <ScrollView>
                 <StackLayout Margin="5,30,5,5">
                     
-                    <Label Text=" Menu"/>
-                      
+                    <Label Text=" Menu" Margin="5,0,5,20"/>
+                    <Label FontAttributes="Bold" Text=" Order of Operations"/>  
                     <Button WidthRequest="115" HorizontalOptions="StartAndExpand" Text="Lesson 1" BackgroundColor="Transparent" Clicked="Handle_Clicked_Order_Of_Operations" Image="orderOfOperations32x32.png" />
                    
                 </StackLayout>
