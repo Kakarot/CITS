@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="CITS.OrderOfOperationsPage">
 	<ContentPage.Content>
-        <Label>Order of Operations</Label>
+        <StackLayout Spacing="30" Orientation="Vertical">
+        <Label VerticalOptions="Center" HorizontalOptions="Center">Order of Operations</Label>
+        <Button Text="Start the Quiz" Clicked="Handle_Clicked_Start_Quiz" />
+            </StackLayout>
 	</ContentPage.Content>
 </ContentPage>
