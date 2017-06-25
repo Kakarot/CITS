@@ -15,11 +15,23 @@ namespace CITS
             InitializeComponent();
         }
 
-		async void OnDismissButtonClicked(object sender, EventArgs args)
+        public String ResultsSummary
+        {
+            get;
+            set;
+        }
+
+
+        async void OnDismissButtonClicked(object sender, EventArgs args)
 		{			
             ResultsScreenDismissed(this, EventArgs.Empty);
-            await Navigation.PopModalAsync();
+
 		}
+
+        public void UpdatePage()
+        {
+            this.ResultsTotalLabel.Text = ResultsSummary;
+        }
 	
     }
 }
