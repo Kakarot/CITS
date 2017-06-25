@@ -7,7 +7,7 @@ namespace CITS.Models
 
         public override Boolean IsSolutionCorrect(String candidateSolution)
         {
-            return candidateSolution.Equals(Solution);
+            return Solution.Equals(candidateSolution.Trim());
         }
     }
 }
