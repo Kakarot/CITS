@@ -4,6 +4,8 @@
         <StackLayout Spacing="30" Orientation="Vertical">
         <Label VerticalOptions="Center" HorizontalOptions="Center">Order of Operations</Label>
         <Button Text="Start the Quiz" Clicked="Handle_Clicked_Start_Quiz" />
+        <Label x:Name="PreviousSessionLabel" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Red"></Label>  
+        <Label x:Name="RecommendationLabel" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Maroon"></Label>   
             </StackLayout>
 	</ContentPage.Content>
 </ContentPage>
