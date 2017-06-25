@@ -1,5 +1,19 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="CITS.ProblemPage">
-	<ContentPage.Content>
-	</ContentPage.Content>
+    <ContentPage.Content>
+        <StackLayout Orientation="Vertical" Margin="0,20,0,0">
+            <StackLayout Orientation="Horizontal">
+                <Label VerticalOptions="Center" HorizontalOptions="Center">Problem #</Label>
+                <Label x:Name="ProblemNumberLabel">
+                </Label>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label x:Name="ProblemLabel">
+                </Label>
+                <Label>Solution: </Label>
+            </StackLayout>
+            <Entry x:Name="SolutionEntry" Placeholder="Enter answer here" HorizontalTextAlignment="Center" IsPassword="false" WidthRequest="200" HorizontalOptions="Center" TextChanged="Handle_TextChanged" Keyboard="Numeric" />
+            <Button Text="Submit" Clicked="OnSubmitButtonClicked" />
+        </StackLayout>
+    </ContentPage.Content>
 </ContentPage>
