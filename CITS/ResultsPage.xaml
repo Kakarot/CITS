@@ -3,6 +3,7 @@
 	<ContentPage.Content>
             <StackLayout Orientation="Vertical" Margin= "0,20,0,0">
         <Label VerticalOptions="Center" HorizontalOptions="Center">Results Page</Label>
+            <Label x:Name="ResultsTotalLabel" VerticalOptions="Center" HorizontalOptions="Center"></Label>
             <Button Text="Dismiss Results Screen" Clicked="OnDismissButtonClicked"/>
       </StackLayout>
 	</ContentPage.Content>
