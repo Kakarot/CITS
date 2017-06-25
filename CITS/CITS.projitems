@@ -20,6 +20,9 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)ResultsPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)ProblemPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
@@ -40,6 +43,9 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ResultsPage.xaml.cs">
       <DependentUpon>ResultsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ProblemPage.xaml.cs">
+      <DependentUpon>ProblemPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
