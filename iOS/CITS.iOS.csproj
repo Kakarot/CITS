@@ -99,6 +99,11 @@
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
     <ImageAsset Include="Assets.xcassets\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\LaunchImage.launchimage\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\CITSicon-60%403x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\CITSicon-60%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\CITSicon-40%403x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\CITSicon-40%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
