@@ -4,6 +4,8 @@ namespace CITS.Models
 {
     public class QuizModel
     {
+        public static ProblemGenerator _problemGenerator = new ProblemGenerator();
+
         public int NumberOfProblems
         {
             get;
@@ -23,20 +25,22 @@ namespace CITS.Models
 			set;
 		}
 
+        public int NumberOfGeneratedProblems
+        {
+            get;
+            set;
+        }
+
         public QuizModel()
         {
         }
 
 
-        public Queue<MathProblemModel> GenerateMathProblems()
+        public Queue<MathProblemModel> GenerateMathProblems(uint numberOfProblems)
         {
-            var mpmList = new Queue<MathProblemModel>();
-            mpmList.Enqueue(new MathProblemModel("(2+2)*10+2","42"));
-            mpmList.Enqueue(new MathProblemModel("3*(9+2)*2", "66"));
-            mpmList.Enqueue(new MathProblemModel("3*9+2*2", "31"));
-
-            this.NumberOfProblems = mpmList.Count;
-            return mpmList;
+            var mpmQueue = _problemGenerator.GenerateOrderOfOperationProblems(numberOfProblems);
+            this.NumberOfProblems += mpmQueue.Count;
+            return mpmQueue;
         }
 
         public String GetRecommendation()
@@ -48,11 +52,11 @@ namespace CITS.Models
 
                 if(percentCorrect > 0.80d)
                 {
-                    recommendation = "Recommendation: You are prepared for the real thing!";
+                    recommendation = "Recommendation:\n\nYou are prepared for the real thing!";
 				}
                 else
                 {
-                    recommendation = "Recommendation: Take the quiz again tomorrow.";   
+                    recommendation = "Recommendation:\n\nTake the quiz again tomorrow.";   
                 }
             }
             else
