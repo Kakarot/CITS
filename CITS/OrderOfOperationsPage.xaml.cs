@@ -142,10 +142,24 @@ namespace CITS
             {
                 //Dismiss problem page and show the results page 
                 await Navigation.PopModalAsync();
+                string pluralizeProblemString = String.Empty;
+                if(quiz.NumberOfGeneratedProblems > 1)
+                {
+					pluralizeProblemString =
+						Convert.ToString(quiz.NumberOfGeneratedProblems) +
+                               " problems were generated during this quiz.";
+                }
+                else if(quiz.NumberOfGeneratedProblems == 1)
+                {
+                    pluralizeProblemString = "1 problem was generated for this quiz.";
+                }
+                else
+                {
+                    pluralizeProblemString = "No extra problems were generated for this quiz.";
+                }
                 this.ResultsContentPage.ResultsSummary =
                         $"You answered {quiz.NumberOfCorrectAnswers} out of {quiz.NumberOfProblems} problems correctly!";
-                this.ResultsContentPage.NumberOfGeneratedProblems = 
-                    Convert.ToString(quiz.NumberOfGeneratedProblems)+" problems were generated during this quiz.";
+                this.ResultsContentPage.NumberOfGeneratedProblems = pluralizeProblemString;
                 this.ResultsContentPage.UpdatePage();
 
                 //Clear this text so that when the modal view is switching
