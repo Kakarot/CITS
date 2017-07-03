@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 namespace CITS.Models
 {
     public class MathProblemModel : ProblemModel
     {
-        public MathProblemModel(string Problem, string Solution):base(Problem,Solution){}
+        public MathProblemModel(string problem, string solution, List<String> listOfHints):base(problem,solution, listOfHints){}
 
         public override Boolean IsSolutionCorrect(String candidateSolution)
         {
