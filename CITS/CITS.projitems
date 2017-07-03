@@ -47,6 +47,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ProblemPage.xaml.cs">
       <DependentUpon>ProblemPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ProblemGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />
