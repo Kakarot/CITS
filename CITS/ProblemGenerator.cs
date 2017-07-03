@@ -90,7 +90,7 @@ namespace CITS
                     tempSubtractVariable = rng.Next(1, 13);
                     generatedExpression =
                         String.Format("({0} - {1}) * {2}",
-                               rng.Next(0, 13),
+                               tempSubtractVariable,
                                rng.Next(0, tempSubtractVariable),
                                rng.Next(0, 13)
                               );
@@ -101,7 +101,7 @@ namespace CITS
                     generatedExpression =
                     String.Format("{0} + ({1} - {2})",
                                rng.Next(0, 13),
-                               rng.Next(0, 13),
+                               tempSubtractVariable,
                                rng.Next(0, tempSubtractVariable)
                               );
                     break;
@@ -111,7 +111,7 @@ namespace CITS
                     generatedExpression =
            String.Format("{0} * ({1} - {2})",
                          rng.Next(0, 13),
-                         rng.Next(0, 13),
+                         tempSubtractVariable,
                          rng.Next(0, tempSubtractVariable)
                         );
                     break;
