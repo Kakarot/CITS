@@ -21,8 +21,13 @@ namespace CITS
             set;
         }
 
+		public String NumberOfGeneratedProblems
+		{
+			get;
+			set;
+		}
 
-        async void OnDismissButtonClicked(object sender, EventArgs args)
+        void OnDismissButtonClicked(object sender, EventArgs args)
 		{			
             ResultsScreenDismissed(this, EventArgs.Empty);
 
@@ -31,6 +36,7 @@ namespace CITS
         public void UpdatePage()
         {
             this.ResultsTotalLabel.Text = ResultsSummary;
+            this.ResultsGeneratedProblemsLabel.Text = NumberOfGeneratedProblems;
         }
 	
     }
