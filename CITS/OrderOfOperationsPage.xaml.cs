@@ -33,14 +33,15 @@ namespace CITS
         public OrderOfOperationsPage()
         {
             InitializeComponent();
-            this.quiz = new QuizModel();
         }
 
         private int CurrentProblemNumber
         {
             get;
-            set;
+            set;        
         }
+
+
 
 
         void Handle_Clicked_Start_Quiz(object sender, System.EventArgs e)
@@ -53,11 +54,13 @@ namespace CITS
             //TODO: Instantiate Quiz Model
             //TODO: Generate List<MathProblemModel>
             //TODO: Ensure last page is ResultsPage, Pass QuizModel
-            this.MathProblems = quiz.GenerateMathProblems();
+            this.quiz = new QuizModel();
+            this.MathProblems = quiz.GenerateMathProblems(2);
             this.CurrentProblemNumber = 0;
 
             this.ProblemContentPage = new ProblemPage();
             this.ProblemContentPage.SolutionSubmitted += CheckIfNewProblem;
+            this.ProblemContentPage.HintRequested += HintRequested;
 
             this.ResultsContentPage = new ResultsPage();
 
@@ -74,15 +77,40 @@ namespace CITS
             await Navigation.PopModalAsync();
 		}
 
+		public void HintRequested(object sender, EventArgs e)
+		{
+			//Enqueue a new problem when user requests a hint
+			var newProblemQueue = quiz.GenerateMathProblems(1);
+			MathProblems.Enqueue(newProblemQueue.Dequeue());
+			quiz.NumberOfGeneratedProblems++;
+		}
+
 		public void CheckIfNewProblem(object sender, EventArgs e)
 		{
+            Boolean generateNewProblem = false;
+
             //Check if answer is correct
             if(MathProblems.Peek().IsSolutionCorrect(this.ProblemContentPage.Solution))
             {
                 quiz.NumberOfCorrectAnswers++;
             }
+            else
+            {
+                if(ProblemGenerator.rng.Next(0,2) == 1)
+                {
+                    generateNewProblem = true;
+                }
+            }
+
+            //Remove currently answered problem
             MathProblems.Dequeue();
-            //Dequeue
+
+            if(generateNewProblem)
+            {
+                var newProblemQueue = quiz.GenerateMathProblems(1);
+                MathProblems.Enqueue(newProblemQueue.Dequeue());
+                quiz.NumberOfGeneratedProblems++;
+            }
             UpdateProblemPageWithProblem();
 
 		}
@@ -100,12 +128,14 @@ namespace CITS
                 //}
 				this.ProblemContentPage.ProblemNumber = CurrentProblemNumber.ToString();
 				this.ProblemContentPage.Problem = MathProblems.Peek().Problem;
+                this.ProblemContentPage.Hints = MathProblems.Peek().Hints;
 				this.ProblemContentPage.UpdateProblemPage();
 
 				if (Navigation.ModalStack.Count == 0)
 				{
 					await Navigation.PushModalAsync(this.ProblemContentPage);
 				}
+                this.ProblemContentPage.SolutionTextField.Focus();
 				
             }
             else
@@ -114,6 +144,8 @@ namespace CITS
                 await Navigation.PopModalAsync();
                 this.ResultsContentPage.ResultsSummary =
                         $"You answered {quiz.NumberOfCorrectAnswers} out of {quiz.NumberOfProblems} problems correctly!";
+                this.ResultsContentPage.NumberOfGeneratedProblems = 
+                    Convert.ToString(quiz.NumberOfGeneratedProblems)+" problems were generated during this quiz.";
                 this.ResultsContentPage.UpdatePage();
 
                 //Clear this text so that when the modal view is switching
