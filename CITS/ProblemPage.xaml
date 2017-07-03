@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="CITS.ProblemPage">
     <ContentPage.Content>
-        <StackLayout Orientation="Vertical" Margin="0,20,0,0">
-            <StackLayout Orientation="Horizontal">
-                <Label VerticalOptions="Center" HorizontalOptions="Center">Problem #</Label>
-                <Label x:Name="ProblemNumberLabel">
+        <StackLayout Orientation="Vertical" Margin="5,20,5,5">
+            <StackLayout Orientation="Horizontal" Margin="5,10,5,5">
+                <Label VerticalOptions="Center" HorizontalOptions="Center" FontAttributes="Bold">Problem #</Label>
+                <Label x:Name="ProblemNumberLabel" FontAttributes="Bold">
                 </Label>
             </StackLayout>
-            <StackLayout Orientation="Horizontal">
-                <Label x:Name="ProblemLabel">
+            <StackLayout Orientation="Horizontal" Margin="5,10,5,5">
+                <Label x:Name="ProblemLabel" FontFamily="Chalkboard SE">
                 </Label>
-                <Label>Solution: </Label>
+               
             </StackLayout>
+              <StackLayout Orientation="Horizontal" Margin="5,10,5,5">
+             <Label FontAttributes="Italic">Solution: </Label>
             <Entry x:Name="SolutionEntry" Placeholder="Enter answer here" HorizontalTextAlignment="Center" IsPassword="false" WidthRequest="200" HorizontalOptions="Center" TextChanged="Handle_TextChanged" Keyboard="Numeric" />
-            <Button Text="Submit" Clicked="OnSubmitButtonClicked" />
+            </StackLayout>
+                <Button Text="Submit" Clicked="OnSubmitButtonClicked" Margin="5,5,5,5" BackgroundColor="Black" TextColor="White"/>
+                <Button Text="Request Hint" Clicked="OnHintButtonClicked" Margin="5,20,5,5" BackgroundColor="Gray" TextColor="White"/>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
