@@ -18,6 +18,16 @@
             </StackLayout>
                 <Button Text="Submit" Clicked="OnSubmitButtonClicked" Margin="5,5,5,5" BackgroundColor="Black" TextColor="White"/>
                 <Button Text="Request Hint" Clicked="OnHintButtonClicked" Margin="5,20,5,5" BackgroundColor="Gray" TextColor="White"/>
+                <Image x:Name="PhotoImage" />
+            <Label x:Name="EmotionLabel" FontAttributes="Bold">Emotions detected for last problem:</Label>
+            <Label x:Name="AngerLabel" FontFamily="Consolas"></Label>
+            <Label x:Name="ContemptLabel" FontFamily="Consolas"></Label>
+            <Label x:Name="DisgustLabel" FontFamily="Consolas"></Label>
+            <Label x:Name="FearLabel" FontFamily="Consolas"></Label>
+            <Label x:Name="HappinessLabel" FontFamily="Consolas"></Label>
+            <Label x:Name="NeutralLabel" FontFamily="Consolas"></Label>
+            <Label x:Name="SadnessLabel" FontFamily="Consolas"></Label>
+            <Label x:Name="SurpriseLabel" FontFamily="Consolas"></Label>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
