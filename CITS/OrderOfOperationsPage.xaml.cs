@@ -129,13 +129,22 @@ namespace CITS
 				this.ProblemContentPage.ProblemNumber = CurrentProblemNumber.ToString();
 				this.ProblemContentPage.Problem = MathProblems.Peek().Problem;
                 this.ProblemContentPage.Hints = MathProblems.Peek().Hints;
-				this.ProblemContentPage.UpdateProblemPage();
+                string status = String.Empty;
+                if(CurrentProblemNumber == 1)
+                {
+                    status = @"N/A";
+                }
+                else
+                {
+                    status = @"";
+                }
+				this.ProblemContentPage.UpdateProblemPage(status);
 
 				if (Navigation.ModalStack.Count == 0)
 				{
 					await Navigation.PushModalAsync(this.ProblemContentPage);
 				}
-                this.ProblemContentPage.SolutionTextField.Focus();
+               // this.ProblemContentPage.SolutionTextField.Focus();
 				
             }
             else
