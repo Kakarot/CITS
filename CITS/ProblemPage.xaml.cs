@@ -53,7 +53,7 @@ namespace CITS
         public ProblemPage()
         {
             InitializeComponent();
-            this.emotionServiceClient = new EmotionServiceClient("8b05986a8a55476783fed041df890036");
+            this.emotionServiceClient = new EmotionServiceClient("INSERT API KEY HERE");
            
 		    AuthorizeCameraUse();
 
