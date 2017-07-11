@@ -138,13 +138,15 @@ namespace CITS
                 {
                     status = @"";
                 }
+
+               
 				this.ProblemContentPage.UpdateProblemPage(status);
 
 				if (Navigation.ModalStack.Count == 0)
 				{
 					await Navigation.PushModalAsync(this.ProblemContentPage);
 				}
-               // this.ProblemContentPage.SolutionTextField.Focus();
+              //  this.ProblemContentPage.SolutionTextField.Focus();
 				
             }
             else
