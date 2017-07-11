@@ -7,6 +7,10 @@ using Microsoft.ProjectOxford.Common.Contract;
 using System.Threading.Tasks;
 using Plugin.Media.Abstractions;
 using Plugin.Connectivity;
+using AVFoundation;
+using Foundation;
+using UIKit;
+using System.Drawing;
 
 namespace CITS
 {
@@ -16,6 +20,14 @@ namespace CITS
         public event EventHandler HintRequested;
         private int currentHintNumber = 0;
         private readonly EmotionServiceClient emotionServiceClient;
+       
+		bool flashOn = false;
+
+		AVCaptureSession captureSession;
+		AVCaptureDeviceInput captureDeviceInput;
+		AVCaptureStillImageOutput stillImageOutput;
+		AVCaptureVideoPreviewLayer videoPreviewLayer;
+
         public String ProblemNumber
         {
             get;
@@ -37,13 +49,30 @@ namespace CITS
             get;
             set;
         }
-
+        		
         public ProblemPage()
         {
             InitializeComponent();
-            this.emotionServiceClient = new EmotionServiceClient("MyAPIKey");
-        }
+            this.emotionServiceClient = new EmotionServiceClient("8b05986a8a55476783fed041df890036");
+           
+		    AuthorizeCameraUse();
 
+			SetupLiveCameraStream();
+			
+			var device = GetCameraForOrientation(AVCaptureDevicePosition.Front);
+			ConfigureCameraForDevice(device);
+
+			captureSession.BeginConfiguration();
+			captureSession.RemoveInput(captureDeviceInput);
+			captureDeviceInput = AVCaptureDeviceInput.FromDevice(device);
+			captureSession.AddInput(captureDeviceInput);
+			captureSession.CommitConfiguration();
+
+
+           
+		}
+
+       
         public List<String> Hints
         {
             get;
@@ -63,6 +92,7 @@ namespace CITS
             //      this.SolutionEntry.Unfocus();
             //      this.SolutionEntry.Unfocus();
             //	this.Focus();
+         
             TakePictureAndShrinkIt();
 
             SolutionSubmitted(this, EventArgs.Empty);
@@ -79,18 +109,54 @@ namespace CITS
 
         async private void TakePictureAndShrinkIt()
         {
-            var mediaOptions = new Plugin.Media.Abstractions.StoreCameraMediaOptions
-            {
-                DefaultCamera = Plugin.Media.Abstractions.CameraDevice.Front,
-            };
-            var photo = await Plugin.Media.CrossMedia.Current.TakePhotoAsync(mediaOptions);
+
+			/*Uncomment this block of code to revert back*/
+			//var mediaOptions = new Plugin.Media.Abstractions.StoreCameraMediaOptions
+			//{
+			//    DefaultCamera = Plugin.Media.Abstractions.CameraDevice.Front,
+			//};
+			//var photo = await Plugin.Media.CrossMedia.Current.TakePhotoAsync(mediaOptions);
+
+
+
+			//test manual
+
+
+			//var device = GetCameraForOrientation(AVCaptureDevicePosition.Front);
+			//ConfigureCameraForDevice(device);
+
+			//captureSession.BeginConfiguration();
+			//captureSession.RemoveInput(captureDeviceInput);
+			//captureDeviceInput = AVCaptureDeviceInput.FromDevice(device);
+			//captureSession.AddInput(captureDeviceInput);
+			//captureSession.CommitConfiguration();
+
+
+			var videoConnection = stillImageOutput.ConnectionFromMediaType(AVMediaType.Video);
+			var sampleBuffer = await stillImageOutput.CaptureStillImageTaskAsync(videoConnection);
+
+			var jpegImageAsNsData = AVCaptureStillImageOutput.JpegStillToNSData(sampleBuffer);
+            var uiImage = UIImage.LoadFromData(jpegImageAsNsData);
+            var resizedImage = ScaledImage(uiImage, 500, 500);
+
+            //var newMediaFile = new MediaFile(resizedImage.)
+            	//var jpegAsByteArray = jpegImageAsNsData.ToArray();
+           // jpegAsByteArray
+            //var photo = resizedImage.AsJPEG((System.nfloat)1.0).AsStream();
+          
+           // var photo = new MemoryStream(jpegAsByteArray);
+
+            //end test manual
+
+
+
             ClearEmotionResults("{Analyzing...}");
             //if (photo != null)
             //PhotoImage.Source = ImageSource.FromStream(() => { return photo.GetStream(); });
-
+            PhotoImage.Source = ImageSource.FromStream(() => { return resizedImage.AsJPEG(1.0f).AsStream();  });
             //  await analyseImage(photo.GetStream());
-            var emotions = await DetectEmotionsAsync(photo);
-            photo.Dispose();
+            var emotions = await DetectEmotionsManuallyAsync(jpegImageAsNsData);
+          //  photo.Dispose();
             this.AngerLabel.Text = $"Anger: {emotions.Anger.ToString()}";
             this.ContemptLabel.Text = $"Contempt: {emotions.Contempt.ToString()}";
             this.DisgustLabel.Text = $"Disgust: {emotions.Disgust.ToString()}";
@@ -100,14 +166,21 @@ namespace CITS
             this.SadnessLabel.Text = $"Sadness: {emotions.Sadness.ToString()}";
             this.SurpriseLabel.Text = $"Surprise: {emotions.Surprise.ToString()}";
 
-            //  var highestEmotion = emotions.ToRankedList().GetEnumerator().MoveNext(()=>{};
-            // var enumeratorOfEmotions = 
+           
+
+
+
+
+
+
+
+
             KeyValuePair<string, float> e = new KeyValuePair<string, float>("zero", 0);
             using (IEnumerator<KeyValuePair<string, float>> enumer = emotions.ToRankedList().GetEnumerator())
             {
                 if (enumer.MoveNext()) e = enumer.Current;
             }
-            //this.GetType().GetProperty(highestEmotion + "Label.TextColor").SetValue(this, Color.Blue, null);
+          
             string highestEmotion = e.Key;
             var highlightedColor = Color.Red;
             switch (highestEmotion)
@@ -245,5 +318,172 @@ namespace CITS
                 DisplayAlert("Hint", "There are no more hints for this problem", "OK");
             }
         }
+
+
+		//Manual
+		async void TakePhotoButtonTapped()
+		{
+			var videoConnection = stillImageOutput.ConnectionFromMediaType(AVMediaType.Video);
+			var sampleBuffer = await stillImageOutput.CaptureStillImageTaskAsync(videoConnection);
+
+			var jpegImageAsNsData = AVCaptureStillImageOutput.JpegStillToNSData(sampleBuffer);
+			var jpegAsByteArray = jpegImageAsNsData.ToArray();
+
+			// TODO: Send this to local storage or cloud storage such as Azure Storage.
+		}
+
+		
+
+		async Task AuthorizeCameraUse()
+		{
+			var authorizationStatus = AVCaptureDevice.GetAuthorizationStatus(AVMediaType.Video);
+
+			if (authorizationStatus != AVAuthorizationStatus.Authorized)
+			{
+				await AVCaptureDevice.RequestAccessForMediaTypeAsync(AVMediaType.Video);
+			}
+		}
+
+		public void SetupLiveCameraStream()
+		{
+			captureSession = new AVCaptureSession();
+
+		//	var viewLayer = liveCameraStream.Layer;
+		//	videoPreviewLayer = new AVCaptureVideoPreviewLayer(captureSession)
+		//	{
+		//		Frame = this.View.Frame
+		//	};
+		//	liveCameraStream.Layer.AddSublayer(videoPreviewLayer);
+
+			var captureDevice = AVCaptureDevice.DefaultDeviceWithMediaType(AVMediaType.Video);
+			ConfigureCameraForDevice(captureDevice);
+			captureDeviceInput = AVCaptureDeviceInput.FromDevice(captureDevice);
+			captureSession.AddInput(captureDeviceInput);
+
+			var dictionary = new NSMutableDictionary();
+			dictionary[AVVideo.CodecKey] = new NSNumber((int)AVVideoCodec.JPEG);
+			stillImageOutput = new AVCaptureStillImageOutput()
+			{
+				OutputSettings = new NSDictionary()
+			};
+
+			captureSession.AddOutput(stillImageOutput);
+			captureSession.StartRunning();
+		}
+
+		void ConfigureCameraForDevice(AVCaptureDevice device)
+		{
+			var error = new NSError();
+			if (device.IsFocusModeSupported(AVCaptureFocusMode.ContinuousAutoFocus))
+			{
+				device.LockForConfiguration(out error);
+				device.FocusMode = AVCaptureFocusMode.ContinuousAutoFocus;
+				device.UnlockForConfiguration();
+			}
+			else if (device.IsExposureModeSupported(AVCaptureExposureMode.ContinuousAutoExposure))
+			{
+				device.LockForConfiguration(out error);
+				device.ExposureMode = AVCaptureExposureMode.ContinuousAutoExposure;
+				device.UnlockForConfiguration();
+			}
+			else if (device.IsWhiteBalanceModeSupported(AVCaptureWhiteBalanceMode.ContinuousAutoWhiteBalance))
+			{
+				device.LockForConfiguration(out error);
+				device.WhiteBalanceMode = AVCaptureWhiteBalanceMode.ContinuousAutoWhiteBalance;
+				device.UnlockForConfiguration();
+			}
+		}
+
+		private async Task<EmotionScores> DetectEmotionsManuallyAsync(NSData inputFile)
+		{
+			if (!CrossConnectivity.Current.IsConnected)
+			{
+				await DisplayAlert("Network error",
+				  "Please check your network connection and retry.", "OK");
+				return null;
+			}
+
+			try
+			{
+				// Get emotions from the specified stream
+				Emotion[] emotionResult = await
+                    emotionServiceClient.RecognizeAsync(new MemoryStream(inputFile.ToArray()));
+				
+				// Assuming the picture has one face, retrieve emotions for the
+				// first item in the returned array
+				var faceEmotion = emotionResult[0]?.Scores;
+
+				return faceEmotion;
+			}
+			catch (Exception ex)
+			{
+				await DisplayAlert("Error", ex.Message, "OK");
+				return null;
+			}
+		}
+
+		public AVCaptureDevice GetCameraForOrientation(AVCaptureDevicePosition orientation)
+		{
+			var devices = AVCaptureDevice.DevicesWithMediaType(AVMediaType.Video);
+			foreach (var device in devices)
+			{
+				if (device.Position == orientation)
+				{
+					return device;
+				}
+			}
+
+			return null;
+		}
+
+
+
+UIImage ScaledImage(UIImage image, nfloat maxWidth, nfloat maxHeight)
+{
+    var maxResizeFactor = Math.Min(maxWidth / image.Size.Width, maxHeight / image.Size.Height);
+    var width = maxResizeFactor * image.Size.Width;
+    var height = maxResizeFactor * image.Size.Height;
+    return image.Scale(new CoreGraphics.CGSize(width, height));
+}
+		//// resize the image to be contained within a maximum width and height, keeping aspect ratio
+		//public UIImage MaxResizeImage(UIImage sourceImage, float maxWidth, float maxHeight)
+		//{
+		//	var sourceSize = sourceImage.Size;
+  //          float maxResizeFactor = (float)Math.Max(maxWidth / sourceSize.Width, maxHeight / sourceSize.Height);
+		//	if (maxResizeFactor > 1) return sourceImage;
+  //          float width = maxResizeFactor * (float)sourceSize.Width;
+  //          float height = maxResizeFactor * (float)sourceSize.Height;
+		//	UIGraphics.BeginImageContext(new SizeF(width, height));
+		//	sourceImage.Draw(new RectangleF(0, 0, width, height));
+		//	var resultImage = UIGraphics.GetImageFromCurrentImageContext();
+		//	UIGraphics.EndImageContext();
+		//	return resultImage;
+		//}
+
+		//// resize the image (without trying to maintain aspect ratio)
+		//public UIImage ResizeImage(UIImage sourceImage, float width, float height)
+		//{
+		//	UIGraphics.BeginImageContext(new SizeF(width, height));
+		//	sourceImage.Draw(new RectangleF(0, 0, width, height));
+		//	var resultImage = UIGraphics.GetImageFromCurrentImageContext();
+		//	UIGraphics.EndImageContext();
+		//	return resultImage;
+		//}
+
+		//// crop the image, without resizing
+		//private UIImage CropImage(UIImage sourceImage, int crop_x, int crop_y, int width, int height)
+		//{
+		//	var imgSize = sourceImage.Size;
+		//	UIGraphics.BeginImageContext(new SizeF(width, height));
+		//	var context = UIGraphics.GetCurrentContext();
+		//	var clippedRect = new RectangleF(0, 0, width, height);
+		//	context.ClipToRect(clippedRect);
+		//	var drawRect = new RectangleF(-crop_x, -crop_y, imgSize.Width, imgSize.Height);
+		//	sourceImage.Draw(drawRect);
+		//	var modifiedImage = UIGraphics.GetImageFromCurrentImageContext();
+		//	UIGraphics.EndImageContext();
+		//	return modifiedImage;
+		//}
+        //End Manual
     }
 }
