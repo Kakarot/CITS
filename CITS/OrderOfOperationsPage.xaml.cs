@@ -42,6 +42,8 @@ namespace CITS
         }
 
 
+        private event EventHandler<ConfidenceEventArgs> ResultsScreenDataReady;
+
 
 
         void Handle_Clicked_Start_Quiz(object sender, System.EventArgs e)
@@ -61,11 +63,16 @@ namespace CITS
             this.ProblemContentPage = new ProblemPage();
             this.ProblemContentPage.SolutionSubmitted += CheckIfNewProblem;
             this.ProblemContentPage.HintRequested += HintRequested;
+            this.ProblemContentPage.ConfidenceResultsReturned += EvaluateConfidence;
 
             this.ResultsContentPage = new ResultsPage();
 
             //Subscribe to page's close event
             this.ResultsContentPage.ResultsScreenDismissed += QuizCompleted;
+
+            //When Emotion request from last problem is done, update results
+            //page with average confidence level for quiz.
+            ResultsScreenDataReady += this.ResultsContentPage.UpdateConfidence;
             UpdateProblemPageWithProblem();
 
         //   await Navigation.PushModalAsync(this.ResultsContentPage);		
@@ -92,25 +99,30 @@ namespace CITS
             //Check if answer is correct
             if(MathProblems.Peek().IsSolutionCorrect(this.ProblemContentPage.Solution))
             {
+                quiz.WasPreviousAnswerCorrect = true;
                 quiz.NumberOfCorrectAnswers++;
             }
             else
             {
-                if(ProblemGenerator.rng.Next(0,2) == 1)
-                {
-                    generateNewProblem = true;
-                }
+                quiz.WasPreviousAnswerCorrect = false;
             }
+            //else
+            //{
+            //    if(ProblemGenerator.rng.Next(0,2) == 1)
+            //    {
+            //        generateNewProblem = true;
+            //    }
+            //}
 
             //Remove currently answered problem
             MathProblems.Dequeue();
 
-            if(generateNewProblem)
-            {
-                var newProblemQueue = quiz.GenerateMathProblems(1);
-                MathProblems.Enqueue(newProblemQueue.Dequeue());
-                quiz.NumberOfGeneratedProblems++;
-            }
+            //if(generateNewProblem)
+            //{
+            //    var newProblemQueue = quiz.GenerateMathProblems(1);
+            //    MathProblems.Enqueue(newProblemQueue.Dequeue());
+            //    quiz.NumberOfGeneratedProblems++;
+            //}
             UpdateProblemPageWithProblem();
 
 		}
@@ -171,6 +183,9 @@ namespace CITS
                 this.ResultsContentPage.ResultsSummary =
                         $"You answered {quiz.NumberOfCorrectAnswers} out of {quiz.NumberOfProblems} problems correctly!";
                 this.ResultsContentPage.NumberOfGeneratedProblems = pluralizeProblemString;
+
+                var recommendation = quiz.GetRecommendation();
+                this.ResultsContentPage.Recommendation = recommendation;
                 this.ResultsContentPage.UpdatePage();
 
                 //Clear this text so that when the modal view is switching
@@ -190,10 +205,44 @@ namespace CITS
 				}
                 this.PreviousSessionLabel.Text =
                     $"Last Session Results: {quiz.NumberOfCorrectAnswers} correct out of {quiz.NumberOfProblems}";
-                this.RecommendationLabel.Text = quiz.GetRecommendation();
+                this.RecommendationLabel.Text = recommendation;
 
 
 			}
+        }
+
+        private void EvaluateConfidence(object sender, EmotionEventArgs e)
+        {
+            /* The quiz instance lives within this class (not ProblemPage.xaml.cs)
+            so increment the number of times emotion values have been analyzed
+            for the quiz class object.  This is not always 1:1 with the number
+            of answered problems because a bad picture may be taken with no results.
+             */
+            quiz.AddEmotionsForLastSolvedProblem(e.Anger, e.Contempt, e.Disgust,
+                                                 e.Fear, e.Happiness, e.Neutral,
+                                                 e.Sadness, e.Surprise);
+
+            //If the last math problem has been solved, then the results screen
+            //is being shown and we do not need to generate the last problem.
+            if(MathProblems.Count != 0)
+			{
+			    if(!quiz.WasPreviousAnswerCorrect /*&& quiz.GenerateNewProblemBasedOnConfidence(e)*/)
+			    {  
+					var newProblemQueue = quiz.GenerateMathProblems(1);
+					MathProblems.Enqueue(newProblemQueue.Dequeue());
+					quiz.NumberOfGeneratedProblems++;
+			    }
+			}
+            else
+            {
+                /* This means the results screen is showing, so raise event letting
+                   the results screen know that the average confidence has been 
+                   returned and calculated. 
+                 */
+                ResultsScreenDataReady(this,new ConfidenceEventArgs(quiz.ConfidenceAverage));
+
+            }
+
         }
     }
 }
