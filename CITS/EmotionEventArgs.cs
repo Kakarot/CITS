@@ -1,7 +1,7 @@
 ﻿using System;
 namespace CITS
 {
-    public class ConfidenceEventArgs : EventArgs
+    public class EmotionEventArgs : EventArgs
     {
         public double Anger
         {
@@ -50,7 +50,7 @@ namespace CITS
 			set;
 		}
 
-		public ConfidenceEventArgs(float anger, float contempt, float disgust,
+		public EmotionEventArgs(float anger, float contempt, float disgust,
                                   float fear, float happiness, float neutral,
                                   float sadness, float surprise)
         {
