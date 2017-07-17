@@ -48,6 +48,8 @@
       <DependentUpon>ProblemPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ProblemGenerator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmotionEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConfidenceEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Models\" />
