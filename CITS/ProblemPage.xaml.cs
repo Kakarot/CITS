@@ -18,6 +18,7 @@ namespace CITS
     {
         public event EventHandler SolutionSubmitted;
         public event EventHandler HintRequested;
+        public event EventHandler<EmotionEventArgs> ConfidenceResultsReturned;
         private int currentHintNumber = 0;
         private readonly EmotionServiceClient emotionServiceClient;
        
@@ -53,7 +54,7 @@ namespace CITS
         public ProblemPage()
         {
             InitializeComponent();
-            this.emotionServiceClient = new EmotionServiceClient("INSERT API KEY HERE");
+            this.emotionServiceClient = new EmotionServiceClient("MYAPIHERE");
            
 		    AuthorizeCameraUse();
 
@@ -156,70 +157,81 @@ namespace CITS
             PhotoImage.Source = ImageSource.FromStream(() => { return resizedImage.AsJPEG(1.0f).AsStream();  });
             //  await analyseImage(photo.GetStream());
             var emotions = await DetectEmotionsManuallyAsync(jpegImageAsNsData);
-          //  photo.Dispose();
-            this.AngerLabel.Text = $"Anger: {emotions.Anger.ToString()}";
-            this.ContemptLabel.Text = $"Contempt: {emotions.Contempt.ToString()}";
-            this.DisgustLabel.Text = $"Disgust: {emotions.Disgust.ToString()}";
-            this.FearLabel.Text = $"Fear: {emotions.Fear.ToString()}";
-            this.HappinessLabel.Text = $"Happiness: {emotions.Happiness.ToString()}";
-            this.NeutralLabel.Text = $"Neutral: {emotions.Neutral.ToString()}";
-            this.SadnessLabel.Text = $"Sadness: {emotions.Sadness.ToString()}";
-            this.SurpriseLabel.Text = $"Surprise: {emotions.Surprise.ToString()}";
 
-           
-
-
-
-
-
-
-
-
-            KeyValuePair<string, float> e = new KeyValuePair<string, float>("zero", 0);
-            using (IEnumerator<KeyValuePair<string, float>> enumer = emotions.ToRankedList().GetEnumerator())
+            if (emotions != null)
             {
-                if (enumer.MoveNext()) e = enumer.Current;
+                ConfidenceResultsReturned(this, new EmotionEventArgs(
+                emotions.Anger, emotions.Contempt, emotions.Disgust, emotions.Fear,
+                emotions.Happiness, emotions.Neutral, emotions.Sadness,
+                emotions.Surprise));         //  photo.Dispose();
+                this.AngerLabel.Text = $"Anger: {emotions.Anger.ToString()}";
+                this.ContemptLabel.Text = $"Contempt: {emotions.Contempt.ToString()}";
+                this.DisgustLabel.Text = $"Disgust: {emotions.Disgust.ToString()}";
+                this.FearLabel.Text = $"Fear: {emotions.Fear.ToString()}";
+                this.HappinessLabel.Text = $"Happiness: {emotions.Happiness.ToString()}";
+                this.NeutralLabel.Text = $"Neutral: {emotions.Neutral.ToString()}";
+                this.SadnessLabel.Text = $"Sadness: {emotions.Sadness.ToString()}";
+                this.SurpriseLabel.Text = $"Surprise: {emotions.Surprise.ToString()}";
+
+
+
+
+
+
+
+
+
+
+                KeyValuePair<string, float> e = new KeyValuePair<string, float>("zero", 0);
+                using (IEnumerator<KeyValuePair<string, float>> enumer = emotions.ToRankedList().GetEnumerator())
+                {
+                    if (enumer.MoveNext()) e = enumer.Current;
+                }
+
+                string highestEmotion = e.Key;
+                var highlightedColor = Color.Red;
+                switch (highestEmotion)
+                {
+                    case "Anger":
+                        this.AngerLabel.TextColor = highlightedColor;
+                        break;
+                    case "Contempt":
+                        this.ContemptLabel.TextColor = highlightedColor;
+                        break;
+                    case "Disgust":
+                        this.DisgustLabel.TextColor = highlightedColor;
+                        break;
+                    case "Fear":
+                        this.FearLabel.TextColor = highlightedColor;
+                        break;
+
+                    case "Happiness":
+                        this.HappinessLabel.TextColor = highlightedColor;
+                        break;
+
+                    case "Neutral":
+                        this.NeutralLabel.TextColor = highlightedColor;
+                        break;
+
+                    case "Sadness":
+
+                        this.SadnessLabel.TextColor = highlightedColor;
+                        break;
+
+
+                    case "Surprise":
+
+                        this.SurpriseLabel.TextColor = highlightedColor;
+                        break;
+                    default: break;
+
+                }
             }
-          
-            string highestEmotion = e.Key;
-            var highlightedColor = Color.Red;
-            switch (highestEmotion)
+            else
             {
-                case "Anger":
-                    this.AngerLabel.TextColor = highlightedColor;
-                    break;
-                case "Contempt":
-                    this.ContemptLabel.TextColor = highlightedColor;
-                    break;
-                case "Disgust":
-                    this.DisgustLabel.TextColor = highlightedColor;
-                    break;
-                case "Fear":
-                    this.FearLabel.TextColor = highlightedColor;
-                    break;
-
-                case "Happiness":
-                    this.HappinessLabel.TextColor = highlightedColor;
-                    break;
-
-                case "Neutral":
-                    this.NeutralLabel.TextColor = highlightedColor;
-                    break;
-
-                case "Sadness":
-
-                    this.SadnessLabel.TextColor = highlightedColor;
-                    break;
-
-
-                case "Surprise":
-
-                    this.SurpriseLabel.TextColor = highlightedColor;
-                    break;
-                default: break;
-
+              DisplayAlert("Picture Analysis Failure","Photo was not taken at a good angle" +
+                           " and therefore could not be parsed. Continue solving problems normally.","OK");    
             }
-
 
         }
 
@@ -402,22 +414,29 @@ namespace CITS
 				  "Please check your network connection and retry.", "OK");
 				return null;
 			}
-
+            EmotionScores emotionScores = null;
 			try
 			{
 				// Get emotions from the specified stream
 				Emotion[] emotionResult = await
                     emotionServiceClient.RecognizeAsync(new MemoryStream(inputFile.ToArray()));
-				
-				// Assuming the picture has one face, retrieve emotions for the
-				// first item in the returned array
-				var faceEmotion = emotionResult[0]?.Scores;
 
-				return faceEmotion;
+                if (emotionResult != null)
+                {
+
+
+                    // Assuming the picture has one face, retrieve emotions for the
+                    // first item in the returned array
+                    emotionScores = emotionResult[0]?.Scores;
+                }
+				return emotionScores;
 			}
 			catch (Exception ex)
 			{
-				await DisplayAlert("Error", ex.Message, "OK");
+                if (emotionScores != null)
+                {
+                    await DisplayAlert("Error", ex.Message, "OK");
+                }
 				return null;
 			}
 		}
