@@ -130,6 +130,22 @@ namespace CITS.Models
             return generateNewProblem;
         }
 
+        public Boolean IsUserConfident(EmotionEventArgs e)
+        {
+			//Sum up emotions that could infer unconfidence
+			double unConfidence = e.Anger + e.Contempt + e.Fear + e.Sadness + e.Disgust;
+			double confidence = e.Happiness + e.Neutral + e.Surprise;
+
+			Boolean isConfident = false;
+
+			if (confidence > unConfidence)
+			{				
+					isConfident = true;
+			}
+
+			return isConfident;
+        }
+
 		public void AddEmotionsForLastSolvedProblem(double anger, double contempt, double disgust,
 								  double fear, double happiness, double neutral,
 								  double sadness, double surprise)
