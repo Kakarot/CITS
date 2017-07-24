@@ -226,7 +226,9 @@ namespace CITS
             //is being shown and we do not need to generate the last problem.
             if(MathProblems.Count != 0)
 			{
-			    if(!quiz.WasPreviousAnswerCorrect /*&& quiz.GenerateNewProblemBasedOnConfidence(e)*/)
+                //Generate a new problem if the answer is incorrect, or 
+                //if the user got the answer correct but was not confident
+                if(!quiz.WasPreviousAnswerCorrect || !quiz.IsUserConfident(e))
 			    {  
 					var newProblemQueue = quiz.GenerateMathProblems(1);
 					MathProblems.Enqueue(newProblemQueue.Dequeue());
